@@ -1,0 +1,37 @@
+{
+  "name": "cmurosdev-landing-page",
+  "version": "1.0.0",
+  "description": "Modern landing page for cmurosdev AI company with bilingual support",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build process needed for static site'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "ai",
+    "landing-page",
+    "bilingual",
+    "responsive",
+    "modern",
+    "cmurosdev"
+  ],
+  "author": "cmurosdev",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmurosdev/website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cmurosdev/website/issues"
+  },
+  "homepage": "https://cmurosdev.com",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
