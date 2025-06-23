@@ -199,35 +199,34 @@ const languageSwitcher = {
     switchLanguage(lang) {
         this.currentLang = lang;
         localStorage.setItem('cmurosdev_lang', lang);
-
-        // Update language buttons
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
-
-        // Update all translatable elements
         document.querySelectorAll('[data-en], [data-es]').forEach(element => {
-            const translation = this.translations[lang][element.textContent.trim()];
-            if (translation) {
-                element.textContent = translation;
+            if (element.classList.contains('hero-title')) return;
+            if (lang === 'es' && element.hasAttribute('data-es')) {
+                element.textContent = element.getAttribute('data-es');
+            } else if (lang === 'en' && element.hasAttribute('data-en')) {
+                element.textContent = element.getAttribute('data-en');
             }
         });
-
-        // Update form labels
         document.querySelectorAll('label').forEach(label => {
-            const translation = this.translations[lang][label.textContent.trim()];
-            if (translation) {
-                label.textContent = translation;
+            if (lang === 'es' && label.hasAttribute('data-es')) {
+                label.textContent = label.getAttribute('data-es');
+            } else if (lang === 'en' && label.hasAttribute('data-en')) {
+                label.textContent = label.getAttribute('data-en');
             }
         });
-
-        // Update placeholders
         document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(input => {
-            const translation = this.translations[lang][input.placeholder];
-            if (translation) {
-                input.placeholder = translation;
+            if (lang === 'es' && input.hasAttribute('data-es')) {
+                input.placeholder = input.getAttribute('data-es');
+            } else if (lang === 'en' && input.hasAttribute('data-en')) {
+                input.placeholder = input.getAttribute('data-en');
             }
         });
+        if (typeof typingEffect.run === 'function') {
+            typingEffect.run();
+        }
     }
 };
 
@@ -374,33 +373,51 @@ const parallaxEffect = {
 
 // Typing effect for hero title
 const typingEffect = {
+    currentTimeout: null,
+    currentIndex: 0,
+    currentText: '',
+    isTyping: false,
     init() {
+        this.run();
+    },
+    run() {
         const title = document.querySelector('.hero-title');
         if (!title) return;
-
-        const text = title.textContent;
+        // Cancelar cualquier animación anterior
+        if (this.currentTimeout) clearTimeout(this.currentTimeout);
+        this.isTyping = false;
+        // Obtener el texto correcto según el idioma
+        const lang = languageSwitcher.currentLang || 'en';
+        const text = title.getAttribute('data-' + lang) || '';
+        this.currentText = text;
+        this.currentIndex = 0;
         title.textContent = '';
         title.style.borderRight = '2px solid var(--primary-color)';
-
-        let i = 0;
+        this.isTyping = true;
         const typeWriter = () => {
-            if (i < text.length) {
-                title.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, 100);
+            if (!this.isTyping) return; // Si se cancela, detener
+            if (this.currentIndex < this.currentText.length) {
+                title.textContent += this.currentText.charAt(this.currentIndex);
+                this.currentIndex++;
+                this.currentTimeout = setTimeout(typeWriter, 100);
             } else {
                 title.style.borderRight = 'none';
+                this.isTyping = false;
             }
         };
-
-        // Start typing effect after a short delay
-        setTimeout(typeWriter, 500);
+        setTimeout(typeWriter, 200);
     }
 };
 
 // Initialize all modules when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Limpiar el contenido del título antes de cualquier animación
+    const title = document.querySelector('.hero-title');
+    if (title) title.textContent = '';
     languageSwitcher.init();
+    setTimeout(() => {
+        languageSwitcher.switchLanguage(languageSwitcher.currentLang);
+    }, 0);
     mobileNav.init();
     smoothScroll.init();
     navbarScroll.init();
